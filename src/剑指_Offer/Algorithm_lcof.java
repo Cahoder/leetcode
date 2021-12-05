@@ -165,4 +165,113 @@ public class Algorithm_lcof {
         return dp[strs.length()];
     }
 
+    //8. 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。
+    // 数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。
+    // 请找出数组中任意一个重复的数字。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof
+    public int findRepeatNumber(int[] nums) {
+        if(nums==null || nums.length==0) return -1;
+        //解法一 哈希 时间O(N) 空间O(N)
+        /*Set<Integer> sets = new HashSet<>();
+        for (int num : nums) {
+            if (sets.contains(num)) {
+                return num;
+            }
+            sets.add(num);
+        }*/
+        //解法二 块排 时间O(NLogN) 空间O(1)
+        /*Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] == nums[i+1]) {
+                return nums[i];
+            }
+        }*/
+        //解法三 辅助数组 时间O(N) 空间O(N)
+        /*boolean[] ints = new boolean[nums.length];
+        for (int num : nums) {
+            if (ints[num]) {
+                return num;
+            }
+            ints[num] = true;
+        }*/
+        //解法四 原地哈希 时间O(N) 空间O(1)
+        /*for(int i = 0 ; i < nums.length; i++){
+            while(nums[i] != i){
+                if(nums[i] == nums[nums[i]]){
+                    return nums[i];
+                }
+                int temp = nums[nums[i]];
+                nums[nums[i]] = nums[i];
+                nums[i] = temp;
+            }
+        }
+        return -1;*/
+        //解法五 原地辅助数组 时间O(N) 空间O(1)
+        for(int i : nums){
+            int n = Math.abs(i);
+            if(nums[n] < 0) return n;
+            else nums[n] *= -1;
+        }
+        return 0;
+    }
+
+    //9.一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof
+    public int missingNumber(int[] nums) {
+        //解法一 遍历 时间O(N) 空间O(1)
+        /*for (int i = 0; i < nums.length; i++) {
+            if (i != nums[i]) {
+                return i;
+            }
+        }
+        return nums.length;*/
+
+        //解法二 二分查找 时间O(NLogN) 空间O(1)
+        int l = 0, r = nums.length-1;
+        while (l < r) {
+            int m = (l + r) >> 1;
+            if (nums[m] == m) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l == nums[l] ? nums.length : l;
+    }
+
+    //10.在排序数组中统计一个数字在排序数组中出现的次数。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/
+    public int search(int[] nums, int target) {
+        //解法一 遍历 时间O(N) 空间O(1)
+        int count = 0;
+        /*for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > target) {
+                break;
+            }
+            if (nums[i] == target) {
+                while (i < nums.length && nums[i++] == target) {
+                    count++;
+                }
+            }
+        }*/
+
+        //解法二 二分查找 时间O(NLogN) 空间O(1)
+        int l = 0, r = nums.length-1;
+        while (l < r) {
+            int m = (l + r) >> 1;
+            if (nums[m] >= target) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        while (l < nums.length && nums[l++] == target) {
+            count++;
+        }
+        return count;
+    }
+
 }
