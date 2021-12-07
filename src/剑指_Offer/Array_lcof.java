@@ -11,7 +11,27 @@ public class Array_lcof {
     // 来源：力扣（LeetCode）
     // 链接：https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof
     public boolean findNumberIn2DArray(int[][] matrix, int target) {
-        return true;
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+
+        //解法一 迭代方式 矩阵右上角开始二分查找 时间O(n+m) 空间O(1)
+        int x = matrix[0].length - 1;
+        int y = 0;
+        while ( x >= 0 && y < matrix.length) {
+            int i = matrix[y][x];
+            if (i == target) {
+                return true;
+            } else if (i > target) {
+                x--;
+            } else {
+                y++;
+            }
+        }
+
+        //解法二 递归方式 矩阵右上角开始二叉搜索树解法
+
+        return false;
     }
 
     //12. 旋转数组的最小数字
@@ -38,7 +58,18 @@ public class Array_lcof {
         //解法二 二分查找 时间O(NLogN) 空间O(1)
         int l = 0, r = numbers.length - 1;
         while (l < r) {
-
+            int m = l + ((r - l) >> 1);
+            //如果中间比右边大，肯定还在升序中
+            if (numbers[m] > numbers[r]) {
+                l = m + 1;
+            }
+            else if (numbers[m] < numbers[r]) {
+                r = m;
+            }
+            // 去重
+            else {
+                r--;
+            }
         }
         return numbers[l];
     }
