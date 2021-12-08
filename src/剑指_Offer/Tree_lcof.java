@@ -47,7 +47,23 @@ public class Tree_lcof {
      */
     public boolean isSubStructure(TreeNode A, TreeNode B) {
         if (A == null || B == null) return false;
-        //从当前A节点开始判断是否子结构
+        // 解法一 迭代每个节点判断
+        /*Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(A);
+        while (!queue.isEmpty()) {
+            A = queue.poll();
+            if (isSub(A, B)) {
+                return true;
+            }
+            if (A.left != null) {
+                queue.offer(A.left);
+            }
+            if (A.right != null) {
+                queue.offer(A.right);
+            }
+        }
+        return false;*/
+        //解法二 递归从当前A节点开始判断是否子结构
         if (isSub(A,B)) return true;
         //从当前A节点的子节点判断是否存在子结构
         return isSubStructure(A.left,B) || isSubStructure(A.right,B);
