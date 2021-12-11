@@ -274,4 +274,170 @@ public class Algorithm_lcof {
         return count;
     }
 
+    // 输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。
+    // 求所有子数组的和的最大值。
+    // 要求时间复杂度为O(n)。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/
+    public int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        //解法一 动态规划 时间O(N) 空间O(N)
+        /*int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            //判断是否要与下一个数值组队
+            dp[i] = Math.max(dp[i-1] + nums[i], nums[i]);
+            //记录最大的子数组的和
+            max = Math.max(max, dp[i]);
+        }*/
+
+        //解法二 动态规划+状态压缩 时间O(N) 空间O(1)
+        int sum = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            //判断是否要与下一个数值组队
+            sum = Math.max(sum + nums[i], nums[i]);
+            //记录最大的子数组的和
+            max = Math.max(max, sum);
+        }
+        return max;
+    }
+
+    // 在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。
+    // 你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。
+    // 给定一个棋盘及其上面的礼物的价值，请计算你最多能拿到多少价值的礼物？
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof
+    public int maxValue(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        int m = grid.length;
+        int n = grid[0].length;
+
+        //解法一 DFS 最大利益驱使 时间复杂度O(nm^2)
+        //return maxValueHelper(grid, 0, 0);
+
+        //解法二 动态规划 转移方程: f(i, j) = max{f(i - 1, j), f(i, j - 1)} + grid_current_value
+        //dp[i][j] 表示从左上角(0,0)以任意移动方式到达当前点(i,j)的最大价值
+        //时间 O(nm) 空间O(nm)
+        /*int[][] dp = new int[m + 1][n + 1];
+        for(int i = 1; i <= m; i++) {
+            for(int j = 1; j <= n; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]) + grid[i - 1][j - 1];
+            }
+        }
+        return dp[m][n];*/
+
+        //解法三 动态规划 - 状态压缩 时间 O(nm) 空间O(n)
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[j] = Math.max(dp[j], dp[j - 1]) + grid[i - 1][j - 1];
+            }
+        }
+
+        return dp[n];
+    }
+
+    private int maxValueHelper(int[][] grid, int mi, int ni) {
+        if (mi < 0 || ni < 0) {
+            return 0;
+        }
+        if (mi >= grid.length || ni >= grid[0].length) {
+            return 0;
+        }
+
+        return grid[mi][ni] + Math.max(maxValueHelper(grid, mi + 1, ni), maxValueHelper(grid, mi, ni + 1));
+    }
+
+    // 剑指 Offer 48. 最长不含重复字符的子字符串
+    // 请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
+
+        int max = Integer.MIN_VALUE;
+
+        //解法一 使用双端队列维护一个不存在重复值的滑动窗口 时间O(N^2) 空间 O(N)
+        /*Deque<Character> deque = new LinkedList<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            //如果当前队列中不存在重复字符,正常入队
+            if (!deque.contains(c)) {
+                deque.add(c);
+            }
+            //否则需要左端剔除重复值往前的所有字符
+            else {
+                max = Math.max(max, deque.size());
+                while(deque.getFirst() != s.charAt(i)) {
+                    deque.removeFirst();
+                }
+                deque.removeFirst();
+                deque.addLast(s.charAt(i));
+            }
+        }
+        return Math.max(max, deque.size());*/
+        //解法二 优化使用Set维护一个不存在重复值的滑动窗口 时间O(N) 空间 O(1)
+        /*Set<Character> set = new HashSet<>();  //Set空间最多就O(128),同理如下
+        int lastIdx = 0;    //记录历史上一次出现重复字符的位置
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            while (set.contains(c)) {
+                set.remove(s.charAt(lastIdx++));
+            }
+            set.add(c);
+            max = Math.max(max, i - lastIdx + 1);
+        }*/
+
+        //解法三 动态规划 + 线性查找 时间O(N^2) 空间 O(1)
+        /*int[] dp = new int[s.length()];
+        dp[0] = 1;
+        for (int i = 1; i < s.length(); i++) {
+            int j = i - 1;
+            while(j >= 0 && s.charAt(i) != s.charAt(j)) j--; // 线性查找
+            dp[i] = dp[i - 1] < i - j ? dp[i - 1] + 1 : i - j; // 无法理解???
+            max = Math.max(max, dp[i]); // max(dp[i - 1], dp[i])
+        }*/
+
+        //解法四 动态规划 + 哈希映射<字符,该字符在字符串中上一次出现位置> 时间O(N) 空间 O(1)
+        /*Map<Character, Integer> map = new HashMap<>();
+        int[] dp = new int[s.length()];
+        dp[0] = 1;
+        map.put(s.charAt(0), 0);
+        for (int i = 1; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int j = map.getOrDefault(c, -1);
+            dp[i] = dp[i - 1] < i - j ? dp[i - 1] + 1 : i - j;  // 无法理解???
+            //更新该字符在字符串中上一次出现位置
+            map.put(c, i);
+            max = Math.max(max, dp[i]); // max(dp[i - 1], dp[i])
+        }*/
+
+        //解法五 动态规划状态压缩成双指针 + 哈希映射<字符,该字符在字符串中上一次出现位置> 时间O(N) 空间 O(1)
+        Map<Character, Integer> map = new HashMap<>();
+        int j = -1; //记录历史上一次出现重复字符的位置
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if(map.containsKey(c)) {
+                j = Math.max(j, map.get(c)); // 更新左指针
+            }
+            //更新该字符在字符串中上一次出现位置
+            map.put(c, i);
+            max = Math.max(max, i - j); // max(dp[i - 1], dp[i])
+        }
+
+        return max;
+    }
+
 }
