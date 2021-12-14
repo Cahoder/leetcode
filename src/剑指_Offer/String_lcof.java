@@ -52,4 +52,48 @@ public class String_lcof {
         return ' ';
     }
 
+    // 剑指 Offer 58 - I. 翻转单词顺序
+    // 输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。
+    // 为简单起见，标点符号和普通字母一样处理。
+    // 例如输入字符串"I am a student. "，则输出"student. a am I"。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof
+    public String reverseWords(String s) {
+        if (s == null) {
+            return null;
+        }
+        s = s.trim();
+        if (s.length() == 0) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+
+        //解法一 双指针解法 时间O(N^2) 空间O(1)
+        /*int l = s.length()-1, r = s.length();
+        while (l > 0) {
+            if (s.charAt(l) == ' ') {
+                result.append(s, l+1, r).append(' ');
+                while (l > 0 && s.charAt(l) == ' ') {
+                    r = l;
+                    l--;
+                }
+            } else {
+                l--;
+            }
+        }
+        result.append(s, l, r);*/
+
+        //解法二 空间换时间 时间O(N) 空间O(N)
+        String[] ss =s.trim().split(" ");
+        for(int i = ss.length-1; i>=0; i--) {
+            if("".equals(ss[i])) {
+                //注意这里是空而不是空格
+                continue;
+            }
+            result.append(" ").append(ss[i]);
+        }
+
+        return result.toString().trim();
+    }
+
 }

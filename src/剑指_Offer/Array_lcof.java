@@ -74,4 +74,93 @@ public class Array_lcof {
         return numbers[l];
     }
 
+    // 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面
+    // 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，
+    // 使得所有奇数在数组的前半部分，所有偶数在数组的后半部分。
+    public int[] exchange(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return nums;
+        }
+
+        //解法一 遍历交换 时间O(N^2) 空间O(1)
+        /*for (int i = 0; i < nums.length; i++) {
+            int num = nums[i];
+            //如果当前是偶数
+            if ((num & 1) == 0) {
+                int j = i+1;
+                for (; j < nums.length; j++) {
+                    int num1 = nums[j];
+                    //遇到奇数前移
+                    if ((num1 & 1) == 1) {
+                        nums[i] = num1;
+                        nums[j] = num;
+                        j = i;
+                        break;
+                    }
+                }
+                i = j;
+            }
+        }*/
+
+        //解法二 左右双指针向中间聚集（快排思想） 时间O(N) 空间O(1)
+        int l = 0, r = nums.length-1, tmp;
+        while (l < r) {
+            //左指针遇到偶数停下来
+            while (l < r && (nums[l] & 1) == 1) {
+                l++;
+            }
+            //右指针遇到奇数停下来
+            while (l < r && (nums[r] & 1) == 0) {
+                r--;
+            }
+            if (l < r) {
+                tmp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = tmp;
+                l++;
+                r--;
+            }
+        }
+
+        return nums;
+    }
+
+    // 剑指 Offer 57. 和为s的两个数字
+    // 输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。
+    // 如果有多对数字的和等于s，则输出任意一对即可。
+    public int[] twoSum(int[] nums, int target) {
+        if (nums == null || nums.length < 2) {
+            return new int[0];
+        }
+        //解法一 哈希表 时间O(N) 空间O(N)
+        // !set.contains(target - nums[i]) ? set.add(nums[i]) : return new int[]{nums[i], target - nums[i]}
+
+        //解法二 双撞指针 时间O(N) 空间O(1)
+        //先利用递增排序的规律缩小范围
+        int r = 0;
+        for (; r < nums.length; r++) {
+            if (nums[r] >= target) break;
+        }
+        //防止右指针越界
+        r--;
+        //如果不足两位数则凑不出答案
+        if (r < 1) {
+            return new int[0];
+        }
+        //利用左右指针求和规律: (l + r > target) ? r-- : l++;
+        int l = 0;
+        while (l < r) {
+            int sum = nums[l] + nums[r];
+            if (sum == target) {
+                return new int[] {nums[l], nums[r]};
+            } else if (sum > target) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+
+        return new int[0];
+    }
+
 }
