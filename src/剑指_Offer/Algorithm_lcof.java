@@ -114,6 +114,47 @@ public class Algorithm_lcof {
         return sum;
     }
 
+    // 剑指 Offer 12. 矩阵中的路径
+    // 给定一个m x n 二维字符网格board 和一个字符串单词word 。如果word 存在于网格中，返回 true ；否则，返回 false 。
+    //单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。
+    // 同一个单元格内的字母不允许被重复使用。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof
+    public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0
+                || word == null || word.length() == 0) {
+            return false;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == word.charAt(0) && existHelper(board, i, j, word, 0, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean existHelper(char[][] board, int row, int col, String word, int idx, boolean[][] visited) {
+        if (row < 0 || col < 0 || row >= board.length || col >= board[0].length || visited[row][col]) {
+            return false;
+        }
+        if (board[row][col] != word.charAt(idx)) {
+            return false;
+        }
+        if (idx == word.length()-1) {
+            return true;
+        }
+        visited[row][col] = true;
+        boolean ans = existHelper(board, row+1, col, word, idx+1, visited)
+                || existHelper(board, row-1, col, word, idx+1, visited)
+                || existHelper(board, row, col+1, word, idx+1, visited)
+                || existHelper(board, row, col-1, word, idx+1, visited);
+        visited[row][col] = false;
+        return ans;
+    }
+
     /**
      * 剑指 Offer 46. 把数字翻译成字符串 - (中等)
      * https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/
