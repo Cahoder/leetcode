@@ -316,7 +316,7 @@ public class Tree_lcof {
     public Node treeToDoublyList(Node root) {
         if (root == null) return null;
 
-        //迭代版: 进行中序遍历
+        //解法一迭代版: 进行中序遍历
         Stack<Node> stack = new Stack<>();
         Node head = null,tail = null,pre = null,cur = root;
         while (!stack.isEmpty() || cur != null) {
@@ -346,7 +346,34 @@ public class Tree_lcof {
         head.left = tail;
         tail.right = head;
 
+        //解法二递归版: 进行中序遍历
+        /*treeToDoublyListHelper(root);
+        head.left = prev;
+        prev.right = head;*/
+
         return head;
+    }
+
+    Node prev, head;
+    private void treeToDoublyListHelper(Node cur) {
+        if (cur == null) {
+            return;
+        }
+        treeToDoublyListHelper(cur.left);
+        // 如果pre为空，就说明是第一个节点，头结点，然后用head保存头结点，用于之后的返回
+        if (prev == null) {
+            head = cur;
+        }
+        // 如果不为空，那就说明是中间的节点。并且pre保存的是上一个节点，
+        // 让上一个节点的右指针指向当前节点
+        else {
+            prev.right = cur;
+        }
+        // 再让当前节点的左指针指向父节点，也就连成了双向链表
+        cur.left = prev;
+        // 保存当前节点，用于下层递归创建
+        prev = cur;
+        treeToDoublyListHelper(cur.right);
     }
 
     int max_depth = 0;
