@@ -481,4 +481,144 @@ public class Algorithm_lcof {
         return max;
     }
 
+    // 剑指 Offer 45. 把数组排成最小的数
+    // 输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，
+    // 打印能拼接出的所有数字中最小的一个。
+    public String minNumber(int[] nums) {
+        //数组中两两组合排序判断规则： x+y>y+x 则 "xy" 大于 "yx"
+        List<String> numStrs = new ArrayList<>(nums.length);
+        for (int num : nums) {
+            numStrs.add(String.valueOf(num));
+        }
+        numStrs.sort((o1, o2) -> (o1 + o2).compareTo(o2 + o1));
+        StringBuilder stb = new StringBuilder();
+        for (String numStr : numStrs) {
+            stb.append(numStr);
+        }
+        return stb.toString();
+    }
+
+    // 剑指 Offer 61. 扑克牌中的顺子
+    // 从若干副扑克牌中随机抽 5 张牌，判断是不是一个顺子，即这5张牌是不是连续的。
+    // 2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。
+    // A 不能视为 14。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof
+    public boolean isStraight(int[] nums) {
+        if (nums == null || nums.length != 5) {
+            return false;
+        }
+        Arrays.sort(nums);
+        //顺子达成条件:
+        //1. 数与数之间的差值不超过5
+        //2. 不能有不为0的相同数
+        int diff = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i-1] == 0) {
+                continue;
+            }
+            if (nums[i] == nums[i-1]) {
+                return false;
+            }
+            diff += nums[i] - nums[i-1];
+        }
+        return diff < 5;
+    }
+
+    // 剑指 Offer 40. 最小的k个数
+    // 输入整数数组 arr ，找出其中最小的 k 个数。
+    // 例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
+    public int[] getLeastNumbers(int[] arr, int k) {
+        if (arr == null || arr.length == 0 || k == 0) {
+            return new int[0];
+        }
+        if (k == arr.length) {
+            return arr;
+        }
+        int[] result = new int[k];
+
+        //解法一 排序后取前k个 时间O(NLogN) 空间O(K)
+        /*Arrays.sort(arr);
+        System.arraycopy(arr, 0, result, 0, k);*/
+
+        //解法二 大根堆排 时间O(NLogN) 空间O(K)
+        /*PriorityQueue<Integer> maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1);
+        for (int i : arr) {
+            if (maxHeap.size() < k) {
+                maxHeap.offer(i);
+            } else if (maxHeap.peek() > i) {
+                maxHeap.poll();
+                maxHeap.offer(i);
+            }
+        }
+        int idx = 0;
+        for (Integer i : maxHeap) {
+            arr[idx++] = i;
+        }*/
+
+        //解法二 切分快排 时间O(NLogN) 空间O(K)
+        morphedQuickSort(arr, 0, arr.length-1, result, k-1);
+        return result;
+    }
+
+    private void morphedQuickSort(int[] arr, int begin, int end, int[] result, int k) {
+        int mid = findQuickSortPivot(arr, begin, end);
+        if (mid == k) {
+            System.arraycopy(arr, 0, result, 0, k+1);
+            return;
+        }
+        if (mid > k) {
+            morphedQuickSort(arr, begin, mid - 1, result, k);
+        } else {
+            morphedQuickSort(arr, mid + 1, end, result, k);
+        }
+    }
+
+    private int findQuickSortPivot(int[] arr, int begin, int end) {
+        int pivot = arr[begin];
+        int i = begin, j = end + 1;
+        while (true) {
+            while (++i <= end && arr[i] < pivot);
+            while (--j >= begin && arr[j] > pivot);
+            if (i >= j) break;
+            int tmp = arr[j];
+            arr[j] = arr[i];
+            arr[i] = tmp;
+        }
+        arr[begin] = arr[j];
+        arr[j] = pivot;
+        return j;
+    }
+
+    // 剑指 Offer 41. 数据流中的中位数
+    // 如何得到一个数据流中的中位数？
+    // 如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。
+    // 如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+    //例如 [2,3,4]的中位数是 3
+    //    [2,3] 的中位数是 (2 + 3) / 2 = 2.5
+    //设计一个支持以下两种操作的数据结构：
+    //void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+    //double findMedian() - 返回目前所有元素的中位数。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof
+    static class MedianFinder {
+        Queue<Integer> minHeap, maxHeap;
+        /** initialize your data structure here. */
+        public MedianFinder() {
+            minHeap = new PriorityQueue<>(); // 小顶堆，保存较大的一半
+            maxHeap = new PriorityQueue<>((x, y) -> (y - x)); // 大顶堆，保存较小的一半
+        }
+        public void addNum(int num) {
+            if(minHeap.size() != maxHeap.size()) {
+                minHeap.add(num);
+                maxHeap.add(minHeap.poll());
+            } else {
+                maxHeap.add(num);
+                minHeap.add(maxHeap.poll());
+            }
+        }
+        public double findMedian() {
+            return minHeap.size() != maxHeap.size() ? minHeap.peek() : (minHeap.peek() + maxHeap.peek()) / 2.0;
+        }
+    }
 }
