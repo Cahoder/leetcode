@@ -621,4 +621,14 @@ public class Algorithm_lcof {
             return minHeap.size() != maxHeap.size() ? minHeap.peek() : (minHeap.peek() + maxHeap.peek()) / 2.0;
         }
     }
+
+    // 剑指 Offer 64. 求1+2+…+n
+    // 求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/qiu-12n-lcof/
+    public int sumNums(int n) {
+        //等差数列求和公式 Sn=n(a1+an)/2 由于a1为1
+        //即可化简为 Sn=n(1+n)>>1=(n+n^2)>>1
+        return (int) (Math.pow(n,2) + n)  >> 1;
+    }
 }
