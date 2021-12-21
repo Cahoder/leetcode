@@ -31,7 +31,7 @@ public class Tree_lcof {
 
         root.left = buildTree(preorder, inorder, preIdx+1, inStart, inRootIdx-1);
         //右子树的根位置 = 前序中左子树数量+1
-        root.right = buildTree(preorder, inorder, preIdx+inRootIdx-inStart+1, inRootIdx+1, inEnd);
+        root.right = buildTree(preorder, inorder, (preIdx+inRootIdx+1)-inStart, inRootIdx+1, inEnd);
         return root;
     }
 
@@ -240,7 +240,10 @@ public class Tree_lcof {
         //通过中序+后序尝试判断二叉搜索树: 时间复杂度 O(NlogN) 空间复杂度 O(N)
         return checkBSTByInPostOrder(inorder,postorder,postorder.length-1,0,inorder.length-1);*/
 
-        //解决思路二: 利用后序遍历倒序（根 右 左） + 辅助单调栈 时间复杂度 O(N) 空间复杂度 O(N)
+        //解决思路二: 利用二叉搜索树性质+中序遍历升序特点: 时间复杂度 O(NlogN) 空间复杂度 O(1)
+        //return checkBSTByInPostOrder2(postorder, 0, postorder.length-1);
+
+        //解决思路三: 利用后序遍历倒序（根 右 左） + 辅助单调栈 时间复杂度 O(N) 空间复杂度 O(N)
         //二叉搜索树的后序遍历倒序存特点 root < right > left
         Stack<Integer> stack = new Stack<>();
         int root = Integer.MAX_VALUE;
@@ -276,6 +279,26 @@ public class Tree_lcof {
         //对当前节点的左右子树递归判断
         return checkBSTByInPostOrder(inorder, postorder, postIdx-1, inIdx+1, inEnd)
                 && checkBSTByInPostOrder(inorder,postorder,postIdx-right_num-1,inStart,inIdx-1);
+    }
+    private boolean checkBSTByInPostOrder2(int[] postorder,int inStart, int inEnd) {
+        if (inStart >= inEnd) {
+            return true;
+        }
+        int rootVal = postorder[inEnd];
+        // 用后序的根去中序中找第一个比根大的,说明后续区域属于右子树
+        int idx = inStart;
+        while (idx < inEnd && postorder[idx] < rootVal) {
+            idx++;
+        }
+        // 根据二叉搜索树性质，如果后序出现小于的值就返回false
+        for (int i = idx; i < inEnd; i++) {
+            if (postorder[i] < rootVal) return false;
+        }
+        // 递归检查左右子树
+        if (!checkBSTByInPostOrder2(postorder, inStart, idx - 1)) return false;
+        if (!checkBSTByInPostOrder2(postorder, idx, inEnd - 1)) return false;
+        // 最终都没问题就返回true
+        return true;
     }
 
     /**

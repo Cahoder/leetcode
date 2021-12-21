@@ -631,4 +631,14 @@ public class Algorithm_lcof {
         //即可化简为 Sn=n(1+n)>>1=(n+n^2)>>1
         return (int) (Math.pow(n,2) + n)  >> 1;
     }
+
+    // 剑指 Offer 16. 数值的整数次方
+    // 实现 pow(x, n) ，即计算 x 的 n 次幂函数（即，x^n）。
+    // 不得使用库函数，同时不需要考虑大数问题。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/
+    public double myPow(double x, int n) {
+        return Math.pow(x, n);
+    }
+
 }
