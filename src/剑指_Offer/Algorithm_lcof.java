@@ -638,7 +638,145 @@ public class Algorithm_lcof {
     //来源：力扣（LeetCode）
     //链接：https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/
     public double myPow(double x, int n) {
-        return Math.pow(x, n);
+        //解法一 快速幂 递归版
+        /*if(n == 0) return 1;
+        if(n == 1) return x;
+        if(n == -1) return 1 / x;
+        double half = myPow(x, n / 2);
+        double mod = myPow(x, n % 2);
+        return half * half * mod;*/
+
+        //解法二 快速幂 迭代版
+        double res = 1;
+        double base = x;
+        boolean flag = n >= 0;
+        //负数取反，考虑到最小负数，需要先自增，后续再除以2
+        if(!flag) n = -(++n);
+        while(n > 0) {
+            if((n & 1) == 1) res *= x;
+            n >>= 1;
+            x *= x;
+        }
+        return flag ? res :1 / (res * base);
+    }
+
+    // 剑指 Offer 15. 二进制中1的个数
+    // 编写一个函数，输入是一个无符号整数（以二进制串的形式），
+    // 返回其二进制表达式中数字位数为 '1' 的个数（也被称为 汉明重量).）。
+    // 提示1：
+    // 请注意，在某些语言（如 Java）中，没有无符号整数类型。
+    // 在这种情况下，输入和输出都将被指定为有符号整数类型，
+    // 并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
+    // 在 Java 中，编译器使用 二进制补码 记法来表示有符号整数。
+    // 因此，在上面的示例 3中，输入表示有符号整数 -3。
+    // 提示2：
+    // 输入必须是长度为 32 的 二进制串 。
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/er-jin-zhi-zhong-1de-ge-shu-lcof
+    public int hammingWeight(int n) {
+        //解法1 将数字转成二进制串后计数
+        /*boolean flag = n >= 0;
+        n = Math.abs(n);
+        StringBuilder stb = new StringBuilder();
+        while (n > 0) {
+            stb.insert(0,n%2);
+            n >>= 1;
+        }
+        //长度必须为32位的二进制串
+        while (stb.length() < 32) {
+            stb.insert(0,'0');
+        }
+        //负数需要以补码方式表示
+        if (!flag) {
+            for (int i = 0; i < stb.length(); i++) {
+                if (stb.charAt(i) == '1') stb.replace(i,i+1,"0");
+                else stb.replace(i,i+1,"1");
+            }
+            int i = stb.length()-1;
+            for (; i >= 0; i--) {
+                if (stb.charAt(i) == '0') {
+                    stb.replace(i,i+1,"1");
+                    break;
+                }
+            }
+            if (i < 0) {
+                stb.insert(0,'1');
+                i++;
+            }
+            while (++i < stb.length()) {
+                stb.replace(i,i+1,"0");
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < stb.length(); i++) {
+            if (stb.charAt(i) == '1') {
+                count++;
+            }
+        }
+        return count;*/
+
+        //解法二 使用Integer提供的API
+        //return Integer.bitCount(n);
+
+        //解法三 位移取最右1
+        /*int count = 0;
+        while (n != 0) {
+            if ((n & 1) == 1) count++;
+            n >>>= 1;
+        }
+        return count;*/
+
+        //解法四 位运算
+        int count = 0;
+        while (n != 0) {
+            n &= (n-1);
+            count++;
+        }
+        return count;
+    }
+
+    // 剑指 Offer 65. 不用加减乘除做加法
+    // 写一个函数，求两个整数之和，
+    // 要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
+    // 提示： a, b 均可能是负数或 0 但是结果不会溢出 32 位整数
+    public int add(int a, int b) {
+        if (a == 0) return b;
+        if (b == 0) return a;
+        if (a == b) return a << 1;
+
+        //解法一 将数字转成二进制串后进行进制计算
+        /*StringBuilder aBits = new StringBuilder(Integer.toBinaryString(a));
+        while (aBits.length() < 32) {
+            aBits.insert(0, '0');
+        }
+        StringBuilder bBits = new StringBuilder(Integer.toBinaryString(b));
+        while (bBits.length() < 32) {
+            bBits.insert(0, '0');
+        }
+        StringBuilder result = new StringBuilder(32);
+        char x = '0';
+        for (int i = 31; i >= 0; i--) {
+            char ac = aBits.charAt(i);
+            char bc = bBits.charAt(i);
+            if (ac == bc) {
+                result.insert(0, x);
+                x = ac;
+                continue;
+            }
+            result.insert(0, x == '1' ? '0':'1');
+        }
+        return Integer.parseUnsignedInt(result.toString(),2);*/
+
+        //解法二 使用异或模拟加法运算
+        while(b != 0) {
+            //计算进位数
+            int x = (a & b) << 1;
+            //异或记录无需进位的数
+            a ^= b;
+            //用b保存需要加在答案上的进位数
+            b = x;
+        }
+        return a;
     }
 
 }
