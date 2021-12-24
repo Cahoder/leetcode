@@ -1,5 +1,7 @@
 package 剑指_Offer;
 
+import java.util.*;
+
 /**
  * 数组类题目
  */
@@ -192,6 +194,191 @@ public class Array_lcof {
         }
 
         return digits;
+    }
+
+    // 剑指 Offer 56 - I. 数组中数字出现的次数
+    // 一个整型数组 nums 里除两个数字之外，其他数字都出现了两次。
+    // 请写程序找出这两个只出现一次的数字。要求时间复杂度是O(n)，空间复杂度是O(1)。
+    // 限制：2 <= nums.length <= 10000
+    // https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/
+    public int[] singleNumbers(int[] nums) {
+        if (nums == null || nums.length < 2) {
+            return new int[0];
+        }
+
+        //解法一 映射计数 时间O(n) 空间O(n)
+        /*int[] result = new int[2];
+        Map<Integer,Integer> numCountMap = new HashMap<>();
+        int idx = 0;
+        for (int num : nums) {
+            numCountMap.put(num, numCountMap.getOrDefault(num,0)+1);
+        }
+        for (Integer num : numCountMap.keySet()) {
+            if (idx == result.length) {
+                break;
+            }
+            Integer count = numCountMap.get(num);
+            if (count == 1) {
+                result[idx++] = num;
+            }
+        }
+        return result;*/
+
+        //解法二 异或位分组异或 时间O(n) 空间O(1)
+        /*
+        相同的数异或为0，不同的异或为1。0和任何数异或等于这个数本身。
+        所以，数组里面所有数异或 = 目标两个数异或（由于这两个数不同，所以异或结果必然不为0）
+        假设数组异或的二进制结果为10010，那么说明这两个数从右向左数第2位是不同的
+        那么可以根据数组里面所有数的第二位为0或者1将数组划分为2个。
+        这样做可以将两个目标数分散在不同的数组中，
+        这两个数组里面的数各自进行异或，得到的结果就是答案
+         */
+        int xor = 0;
+        for (int num : nums) {
+            xor ^= num;
+        }
+        //找数组里数之间异或位的idx
+        //idx可通过xor&(-xor)直接获得
+        int idx = 0;
+        while ((xor & 1) == 0) {
+            idx++;
+            xor >>= 1;
+        }
+        //在异或位各自进行异或，得到的就是答案
+        int diff1 = 0, diff2 = 0;
+        for (int num : nums) {
+            if ((num >> idx & 1) == 0) {
+                diff1 ^= num;
+            }
+            else if ((num >> idx & 1) == 1) {
+                diff2 ^= num;
+            }
+        }
+        return new int[] {diff1, diff2};
+    }
+
+    // 剑指 Offer 56 - II. 数组中数字出现的次数 II
+    // 在一个数组 nums 中除一个数字只出现一次之外，其他数字都出现了三次。
+    // 请找出那个只出现一次的数字。
+    // 限制：1 <= nums.length <= 10000  &&  1 <= nums[i] < 2^31
+    // https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/
+    public int singleNumber(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length < 4) {
+            return nums[0];
+        }
+        //解法一 映射计数 时间O(n) 空间O(n)
+        // TODO ignored
+
+        //解法二 排序 时间O(nLogn) 空间O(1)
+        /*Arrays.sort(nums);
+        for(int i =0; i <= nums.length-2; i += 3) {
+            if(nums[i] != nums[i+2]) {
+                return nums[i];
+            }
+        }
+        return nums[nums.length-1];*/
+
+        //解法三 位运算 时间O(32n) 空间O(1)
+        int res = 0, i = 0;
+        while (i < 32) {
+            int bit = 0;
+            for (int num : nums) {
+                bit += ((num >> i) & 1);
+            }
+            res += (bit % 3 << i++);
+        }
+        return res;
+    }
+
+    // 剑指 Offer 39. 数组中出现次数超过一半的数字
+    // 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+    // 你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+    // 限制：1 <= 数组长度 <= 50000
+    // https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/
+    public int majorityElement(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length < 3) {
+            return nums[0];
+        }
+
+        //解法一 映射计数 时间O(n) 空间O(n)
+        // TODO ignored
+
+        //解法二 排序 时间O(nLogn) 空间O(1)
+        /*Arrays.sort(nums);
+        int result = nums[0];
+        int maxCount = 1;
+        int count = 1;
+        for(int i = 1; i < nums.length; i++) {
+            if (nums[i] != nums[i-1]) {
+                count = 1;
+            }
+            count++;
+            if (count > maxCount) {
+                maxCount = count;
+                result = nums[i];
+            }
+        }
+        return result;*/
+
+        //解法三 排序后取中位数(超过一半的数排序后必定占据中间) 时间O(nLogn) 空间O(1)
+        /*Arrays.sort(nums);
+        return nums[nums.length >> 1];*/
+
+        //解法四 摩尔投票法(极限一换一,最后活下来的肯定是多的) 时间O(n) 空间O(1)
+        int count = 0;
+        int result = 0;
+        for (int num : nums) {
+            if (count == 0) result = num;
+            count += (result == num) ? 1:-1;
+        }
+        return result;
+    }
+
+    // 剑指 Offer 66. 构建乘积数组
+    // 给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，
+    // 其中B[i]的值是数组A中除了下标 i 以外的元素的积,
+    // 即B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]。不能使用除法。
+    //
+    // 提示： 所有元素乘积之和不会溢出 32 位整数 && a.length <= 100000
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof
+    public int[] constructArr(int[] a) {
+        if (a == null || a.length < 1) {
+            return new int[0];
+        }
+        if (a.length == 1) {
+            return new int[]{0};
+        }
+        int[] result = new int[a.length];
+
+        //解法一 暴力遍历 时间O(n^2) 空间O(1)
+        /*for (int i = 0; i < a.length; i++) {
+            int mult = 1;
+            for (int j = 0; j < a.length; j++) {
+                if (i != j) {
+                    mult *= a[j];
+                }
+            }
+            result[i] = mult;
+        }*/
+
+        //解法二 错位累乘 时间O(n) 空间O(1)
+        for (int i = 0, mult = 1; i < a.length; i++) {
+            result[i] = mult;
+            mult *= a[i];
+        }
+        for (int i = a.length - 1, mult = 1; i >= 0; i--) {
+            result[i] *= mult;
+            mult *= a[i];
+        }
+
+        return result;
     }
 
 }
