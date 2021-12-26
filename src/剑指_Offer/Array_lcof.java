@@ -381,4 +381,55 @@ public class Array_lcof {
         return result;
     }
 
+    // 剑指 Offer 29. 顺时针打印矩阵
+    // 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
+    // https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/
+    public int[] spiralOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return new int[0];
+        }
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int idx = 0;
+        int[] result = new int[row*col];
+
+        int[] start = new int[] {0,0};
+        int[] end = new int[] {row-1,col-1};
+        while (true) {
+            //从左往右走
+            for (int j = start[1]; j <= end[1]; j++) {
+                result[idx++] = matrix[start[0]][j];
+            }
+            if (++start[0] > end[0]) {
+                break;
+            }
+
+            //从上往下走
+            for (int j = start[0]; j <= end[0]; j++) {
+                result[idx++] = matrix[j][end[1]];
+            }
+            if (--end[1] < start[1]) {
+                break;
+            }
+
+            //从右往左走
+            for (int j = end[1]; j >= start[1]; j--) {
+                result[idx++] = matrix[end[0]][j];
+            }
+            if (--end[0] < start[0]) {
+                break;
+            }
+
+            //从下往上走
+            for (int j = end[0]; j >= start[0]; j--) {
+                result[idx++] = matrix[j][start[1]];
+            }
+            if (++start[1] > end[1]) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
 }

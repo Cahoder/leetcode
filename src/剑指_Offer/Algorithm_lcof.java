@@ -779,4 +779,122 @@ public class Algorithm_lcof {
         return a;
     }
 
+    // 剑指 Offer 62. 圆圈中最后剩下的数字
+    // 0,1,···,n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圆圈里删除第m个数字（删除后从下一个数字开始计数）。
+    // 求出这个圆圈里剩下的最后一个数字。
+    // 限制： 1 <= n <= 10^5 && 1 <= m <= 10^6
+    // 来源：力扣（LeetCode）
+    // 链接：https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof
+    public int lastRemaining(int n, int m) {
+        //解法一 模拟删除 时间O(n) 空间O(n)
+        /*ArrayList<Integer> list = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            list.add(i);
+        }
+        int idx = 0;
+        while (n > 1) {
+            idx = (idx+m-1)%n;
+            list.remove(idx);
+            n--;
+        }
+        return list.get(0);*/
+
+        //解法二 公式法 时间O(n) 空间O(1)
+        //f(N,M)=(f(N−1,M)+M)%N
+        //当只有一人时,答案下标为0
+        int ans = 0;
+        for (int i = 2; i <= n; i++) {
+            ans = (ans + m) % i;
+        }
+        return ans;
+    }
+
+    // 剑指 Offer 57 - II. 和为s的连续正数序列
+    // 输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+    // 序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+    // 限制： 1 <= target <= 10^5
+    // 来源：力扣（LeetCode）
+    // 链接：https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof
+    public int[][] findContinuousSequence(int target) {
+        if (target <= 2) return new int[0][0];
+        //解法一 遍历
+        /*List<int[]> tmp = new ArrayList<>();
+        for (int i = 1; i < target-1; i++) {
+            int sum = i;
+            for (int j = i+1; j < target; j++) {
+                sum += j;
+                if (sum > target) {
+                    break;
+                }
+                if (sum == target && j-i+1 >= 2) {
+                    int[] seq = new int[j-i+1];
+                    for (int k = i; k <= j; k++) {
+                        seq[k-i] = k;
+                    }
+                    tmp.add(seq);
+                    break;
+                }
+            }
+        }*/
+
+        //解法二 双指针滑动窗口
+        List<int[]> tmp = new ArrayList<>();
+        for (int l = 1,r = 1,sum = 0; r < target; r++) {
+            sum += r;
+            while (sum > target) {
+                sum -= l++;
+            }
+            if (sum == target && r-l+1 >= 2) {
+                int[] seq = new int[r-l+1];
+                for (int i = 0; i < seq.length; i++) {
+                    seq[i] = i+l;
+                }
+                tmp.add(seq);
+            }
+        }
+
+        int[][] result = new int[tmp.size()][];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = tmp.get(i);
+        }
+        return result;
+    }
+
+    // 剑指 Offer 14- I. 剪绳子
+    // 给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m-1] 。
+    // 请问 k[0]*k[1]*...*k[m-1] 可能的最大乘积是多少？
+    // 例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+    // 提示： 2 <= n <= 58
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/jian-sheng-zi-lcof
+    public int cuttingRope(int n) {
+        if(n <= 3) return n - 1;
+        /*
+            解法一：动态规划
+            当 2 ≤ n ≤ 58 时，假设对正整数 n 拆分出的第一个正整数是 j（1 < j < n），则有以下两种方案：
+            将 n 拆分成 j 和 n-j 的和，且 n-j 不再拆分成多个正整数，此时的乘积是 j*(n-j);
+            将 n 拆分成 j 和  n-j 的和，且  n-j 继续拆分成多个正整数，此时的乘积是 j*dp[n−j];
+            判断这两种方案谁较优即可。
+        */
+        /*int[] dp = new int[n+1];
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j < i; j++) {
+                dp[i] = Math.max(Math.max(j*(i-j), j*dp[i-j]), dp[i]);
+            }
+        }
+        return dp[n];*/
+
+        /*
+            解法二 贪心算法 尽可能将绳子以长度3等分为多段时，乘积最大
+            n = 3a+b   b属于{0,1,2}
+            最优： 3a+0=n 把绳子尽可能切为多个长度为 3 的片段
+            次优： 3a+2=n 若最后一段绳子长度为2则保留,不再拆为
+            最差： 3(a-1)+2+2=n 若最后一段绳子长度为1则拆掉一个3拼成 3+1 -> 2+2
+         */
+        int a = n / 3, b = n % 3;
+        if(b == 0) return (int)Math.pow(3, a);
+        if(b == 1) return (int)Math.pow(3, a - 1) * (2 + 2);
+        return (int)Math.pow(3, a) * 2;
+    }
+
 }

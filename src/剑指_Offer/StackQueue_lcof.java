@@ -152,7 +152,7 @@ public class StackQueue_lcof {
         }*/
 
         //方法三: 使用辅助链表类
-        private class Node {
+        private static class Node {
             int min;
             int val;
             Node next;
@@ -162,11 +162,12 @@ public class StackQueue_lcof {
                 this.next = next;
             }
         }
+
         private Node head;
 
         public void push(int x) {
-            if (head == null) head = new Node(x,x,null);
-            else head = new Node(Math.min(x,head.min),x,head);
+            if (head == null) head = new Node(x, x, null);
+            else head = new Node(Math.min(x, head.min), x, head);
         }
 
         public void pop() {
