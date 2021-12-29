@@ -897,4 +897,56 @@ public class Algorithm_lcof {
         return (int)Math.pow(3, a) * 2;
     }
 
+    // 剑指 Offer 38. 字符串的排列
+    // 输入一个字符串，打印出该字符串中字符的所有排列。
+    // 限制： 1 <= s 的长度 <= 8
+    // 来源：力扣（LeetCode）
+    // 链接：https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/
+    public String[] permutation(String s) {
+        if (s == null || s.length() == 0) return new String[0];
+        if (s.length() == 1) return new String[]{s};
+        boolean[] visited = new boolean[s.length()];
+        StringBuilder stb = new StringBuilder();
+        //解法一 全排列后通过Set去重
+        //Set<String> result = new HashSet<>();
+        //permutation_trace_back_helper(s, visited, result, stb);
+        //解法二 全排列+排序剪枝
+        List<String> result = new ArrayList<>();
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars);
+        permutation_trace_back_helper2(chars, visited, result, stb);
+        return result.toArray(new String[0]);
+    }
+
+    private void permutation_trace_back_helper(String s, boolean[] visited, Set<String> result, StringBuilder stb) {
+        if (stb.length() == s.length()) {
+            result.add(stb.toString());
+            return;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (visited[i]) continue;
+            visited[i] = true;
+            stb.append(s.charAt(i));
+            permutation_trace_back_helper(s, visited, result, stb);
+            stb.deleteCharAt(stb.length()-1);
+            visited[i] = false;
+        }
+    }
+
+    private void permutation_trace_back_helper2(char[] chars, boolean[] visited, List<String> result, StringBuilder stb) {
+        if (stb.length() == chars.length) {
+            result.add(stb.toString());
+            return;
+        }
+        for (int i = 0; i < chars.length; i++) {
+            // visited[i-1] == false,说明同一树层chars[i-1]被排列过
+            if (i > 0 && !visited[i-1] && chars[i] == chars[i-1]) continue;
+            if (visited[i]) continue;
+            visited[i] = true;
+            stb.append(chars[i]);
+            permutation_trace_back_helper2(chars, visited, result, stb);
+            stb.deleteCharAt(stb.length()-1);
+            visited[i] = false;
+        }
+    }
 }
