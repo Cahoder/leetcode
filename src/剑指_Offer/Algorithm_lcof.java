@@ -949,4 +949,40 @@ public class Algorithm_lcof {
             visited[i] = false;
         }
     }
+
+    // 剑指 Offer 49. 丑数
+    // 我们把只包含质因子 2、3 和 5 的数称作丑数（Ugly Number）。
+    // 求按从小到大的顺序的第 n 个丑数。
+    // 说明: 1 是丑数。
+    // n 不超过1690。
+    // 来源：力扣（LeetCode）
+    // 链接：https://leetcode-cn.com/problems/chou-shu-lcof/
+    public int nthUglyNumber(int n) {
+        //解法一 遍历判断
+        /*int idx = 1;
+        int idn = 1;
+        while (idx < n) {
+            int num = ++idn;
+            while (num % 2 == 0) num /= 2;
+            while (num % 3 == 0) num /= 3;
+            while (num % 5 == 0) num /= 5;
+            if (num == 1) idx++;
+        }
+        return idn;*/
+
+        //解法二 大丑数=小丑数*(2|3|5),1th丑数=1
+        int[] dp = new int[n+1];
+        dp[0] = 1;
+        for (int a = 0,b = 0,c = 0, i = 1; i < n; i++) {
+            int uglyA = dp[a]*2;
+            int uglyB = dp[b]*3;
+            int uglyC = dp[c]*5;
+            dp[i] = Math.min(Math.min(uglyA, uglyB), uglyC);
+            if (uglyA == dp[i]) a++;
+            if (uglyB == dp[i]) b++;
+            if (uglyC == dp[i]) c++;
+        }
+        return dp[n-1];
+    }
+
 }
