@@ -985,4 +985,28 @@ public class Algorithm_lcof {
         return dp[n-1];
     }
 
+    // 剑指 Offer 44. 数字序列中某一位的数字
+    // 数字以0123456789101112131415…的格式序列化到一个字符序列中。
+    // 在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
+    // 请写一个函数，求任意第n位对应的数字。
+    // 限制：0 <= n < 2^31
+    // 来源：力扣（LeetCode）
+    // 链接：https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof
+    public int findNthDigit(int n) {
+        int len = 10;
+        int digits = 1;
+        if (n < len) return n;
+        //解法一：通过位数范围内字符序列长度缩小查找,但会数字上溢
+        int l = 0;
+        do {
+            digits++;
+            l = (int) (Math.pow(10, digits) - Math.pow(10, digits-1)) * digits;
+            len += l;
+        } while (len < n);
+        int gap = (n - (len - l)) / digits;
+        int num = (int) (Math.pow(10, digits-1) + gap);
+        int numIdx = (len - l) + (gap * digits);
+        return String.valueOf(num).charAt(n-numIdx) - '0';
+    }
+
 }
