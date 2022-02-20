@@ -892,9 +892,29 @@ public class Algorithm_lcof {
             最差： 3(a-1)+2+2=n 若最后一段绳子长度为1则拆掉一个3拼成 3+1 -> 2+2
          */
         int a = n / 3, b = n % 3;
-        if(b == 0) return (int)Math.pow(3, a);
-        if(b == 1) return (int)Math.pow(3, a - 1) * (2 + 2);
-        return (int)Math.pow(3, a) * 2;
+        if(b == 0) return (int) Math.pow(3, a);
+        if(b == 1) return (int) Math.pow(3, a - 1) * (2 + 2);
+        return (int) Math.pow(3, a) * 2;
+    }
+
+    // 剑指 Offer 14- II. 剪绳子 II
+    // 给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m-1] 。
+    // 请问 k[0]*k[1]*...*k[m-1] 可能的最大乘积是多少？
+    // 例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+    // 答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+    // 提示： 2 <= n <= 1000
+    //来源：力扣（LeetCode）
+    //链接：https://leetcode-cn.com/problems/jian-sheng-zi-ii-lcof/
+    public int cuttingRope2(int n) {
+        //数学推导 让每段长度尽量为3，这样得出的乘积最大
+        if (n == 2) return 1;
+        if (n == 3) return 2;
+        long res = 1;
+        while (n > 4) {
+            res = (res * 3) % 1000000007;
+            n -= 3;
+        }
+        return (int) (res * n % 1000000007);
     }
 
     // 剑指 Offer 38. 字符串的排列
@@ -993,20 +1013,19 @@ public class Algorithm_lcof {
     // 来源：力扣（LeetCode）
     // 链接：https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof
     public int findNthDigit(int n) {
-        int len = 10;
-        int digits = 1;
-        if (n < len) return n;
-        //解法一：通过位数范围内字符序列长度缩小查找,但会数字上溢
-        int l = 0;
+        long digitNmLen = 10;
+        if (n < digitNmLen) return n;
+        //解法一：通过每个位数内字符序列长度缩小n的范围
+        int digit = 1;
+        long num = 1;
         do {
-            digits++;
-            l = (int) (Math.pow(10, digits) - Math.pow(10, digits-1)) * digits;
-            len += l;
-        } while (len < n);
-        int gap = (n - (len - l)) / digits;
-        int num = (int) (Math.pow(10, digits-1) + gap);
-        int numIdx = (len - l) + (gap * digits);
-        return String.valueOf(num).charAt(n-numIdx) - '0';
+           n -= digitNmLen;
+           digit++;
+           num *= 10;
+           digitNmLen = (num*10 - num) * digit;
+        } while (n > digitNmLen);
+        num += n/digit;
+        return String.valueOf(num).charAt(n%digit) - '0';
     }
 
 }
