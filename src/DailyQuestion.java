@@ -3666,5 +3666,43 @@ public class DailyQuestion {
         }
     }
 
+    /**
+     * 2022-02-23 编辑距离
+     * 给你两个单词 word1 和 word2
+     * 提示：
+     *     0 <= word1.length, word2.length <= 500
+     *     word1 和 word2 由小写英文字母组成
+     * 你可以对word1进行如下三种操作:  插入一个字符 删除一个字符 替换一个字符
+     * https://leetcode-cn.com/problems/edit-distance/
+     * @return 请返回将 word1 转换成 word2 所使用的最少操作数。
+     */
+    public int minDistance(String word1, String word2) {
+        //解决方法: 动态规划
+        //假设dp[i][j]表示将word1前i个 -> word2前j个的最少操作数
+        //定义如下三种操作:
+        //1替换. dp[i-1][j-1]表示(将word1前i-1个 -> word2前j-1个)所需最少操作数
+        //2插入. dp[i][j-1]表示(将word1前i个 -> word2前j-1个，然后尾部插入word2的第j个)所需最少操作数
+        //3删除. dp[i-1][j]表示(将word1前i-1个 -> word2前j个，然后删除word1的第i个)所需最少操作数
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        for (int j = 0; j < word2.length(); j++) {
+            dp[0][j] = j;   //只能不停地插入操作
+        }
+        for (int i = 0; i < word1.length(); i++) {
+            dp[i][0] = i;   //只能不停地删除操作
+        }
+
+        for (int i = 1; i <= word1.length(); i++) {
+            for (int j = 1; j <= word2.length(); j++) {
+                //如果word1[i] == word2[j], 此时最少操作数等同求dp[i-1][j-1]
+                if (word1.charAt(i) == word2.charAt(j)) dp[i][j] = dp[i-1][j-1];
+                //否则取 min(替换,插入,删除) + 1 作为最少操作数
+                else {
+                    dp[i][j] = Math.min(dp[i-1][j-1], Math.min(dp[i-1][j], dp[i][j-1])) + 1;
+                }
+            }
+        }
+        return dp[word1.length()][word2.length()];
+    }
+
 
 }
