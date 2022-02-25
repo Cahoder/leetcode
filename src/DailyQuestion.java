@@ -3704,5 +3704,47 @@ public class DailyQuestion {
         return dp[word1.length()][word2.length()];
     }
 
+    /**
+     * 2022-02-25 接雨水
+     * 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图
+     * https://leetcode-cn.com/problems/trapping-rain-water/
+     * @return 请计算按此排列的柱子，下雨之后能接多少雨水
+     */
+    public int trap(int[] height) {
+        //首先找到制高点
+        int max = 0;
+        int maxIdx = 0;
+        for(int i = 0; i < height.length; i++) {
+            if(max < height[i]) {
+                max = height[i];
+                maxIdx = i;
+            }
+        }
+
+        int count = 0;
+        int topIdx = 0;
+        //从左往右向制高点找局部制高点
+        for(int i = 0; i < maxIdx; i++) {
+            if (height[i] > height[topIdx]) {
+                topIdx = i;
+            }
+            else {
+                count += height[topIdx] - height[i];
+            }
+        }
+
+        topIdx = height.length-1;
+        //从右往左向制高点找局部制高点
+        for(int i = height.length-1; i > maxIdx; i--) {
+            if (height[i] > height[topIdx]) {
+                topIdx = i;
+            }
+            else {
+                count += height[topIdx] - height[i];
+            }
+        }
+
+        return count;
+    }
 
 }
